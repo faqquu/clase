@@ -1,0 +1,14 @@
+<div class="card-container">
+<div *ngFor="let producto of productos; let i = index">
+    <div class="card-container">
+        <div class="card">
+            <div class="card-body">
+                <p id="imagen"> {{ i + 1 }}. <img src="{{ producto.imagen }}"></p>
+                <p>Nombre: {{ producto.nombre }}</p>
+                <p>Precio: {{ producto.precio }}</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
