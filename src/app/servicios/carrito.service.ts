@@ -7,7 +7,7 @@ import { Producto } from '../modelos/producto.models';
 })
 export class CarritoService {
 
-  private carritoSubject = new BehaviorSubject<{ producto: Producto; cantidad: number }[]>([]);
+  private carritoSubject = new BehaviorSubject<{ producto: Producto; cantidad: number; }[]>([]);
   carrito$ = this.carritoSubject.asObservable();
 
   agregarAlCarrito(producto: Producto) {
@@ -15,9 +15,11 @@ export class CarritoService {
     const encontrado = productos.find(p => p.producto.id === producto.id);
 
     if (encontrado) {
-      encontrado.cantidad++
+      let i;
+      encontrado.cantidad++;
+  
     } else {
-      this.carritoSubject.next([...productos, { producto, cantidad: 1 }])
+      this.carritoSubject.next([...productos, { producto, cantidad: 1}])
     }
   }
 
@@ -30,5 +32,6 @@ export class CarritoService {
     this.carritoSubject.next([])
   }
 
+  
   constructor() { }
 }
