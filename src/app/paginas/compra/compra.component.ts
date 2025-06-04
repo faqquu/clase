@@ -1,13 +1,58 @@
-import { Component } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DomSanitizer,SafeResourceUrl } from '@angular/platform-browser';
+import jsPDF from 'jspdf';
+import { CarritoService } from '../../servicios/carrito.service';
 @Component({
   selector: 'app-compra',
-  imports: [FormGroup],
+  standalone:true,
+  imports: [CommonModule,ReactiveFormsModule],
   templateUrl: './compra.component.html',
   styleUrl: './compra.component.css'
 })
-export class CompraComponent {
+export class CompraComponent implements OnInit {
+  //Declaracion del formulario reactivo para la compra
+  formularioCompra!: FormGroup;
+
+  //Variable para almacenar el total de la compra(subtotal+envio)
+  total!:number
+
+  //Costo fijo de envio
+  envio = 5000
+
+  //indicador para saber si la factura ya fue generada
+  facturaGenerada = false
+
+  //Objeto que contiene la informacion de la factura generada
+  factura: any
+
+  //Controla la visibilidad del modal que muestra el PDF
+  mostrarModal = false
+
+  //Fuente segura para mostrar el PDF generado en el iframe (URL sanitizada)
+  pdfSrc: SafeResourceUrl | undefined;
+
+  constructor(
+    private fb:FormBuilder,  // FormBuilder para crear el formulario activo
+    private carritoService:CarritoService, //Servicio para manejar el carrito y obtener productos y total
+    private sanitizer: DomSanitizer //Para sanitizar la URL del PDF y que angular lo permita mostrar
+  ){}
+
+  //Metodo que se ejecuta al inicializar el componente
+  ngOnInit(): void {
+    //Formulario con los campos requeridos y validadores
+    this.formularioCompra = this.fb.group({
+      nombre:['',Validators.required],
+      direccion : ['',Validators.required],
+      correo : ['',[Validators.required, Validators.email]],
+      telefono : ['',Validators.required],
+      codigoPostal : ['',Validators.required],
+      ciudad : ['',Validators.required],
+      provincia : ['',Validators.required],
+      metodoPago : ['',Validators.required],
+    })
+  } 
   //Calcular el total de la compra sumando del suntotal y el costo de envio
   calcularTotal():number{
     const subtotal = this.carritoService.obtenerTotal();//Obtiene el subtotal del carrito
@@ -39,9 +84,9 @@ export class CompraComponent {
     if(this.formularioCompra.valid){
       this.emitirFactura();//Crea la factura
       this.generarPDFModal(); //Genera y muestra el PDF en modal
-    }else(
+    }else{
       this.formularioCompra.markAllAsTouched();//Marca todos los campos como tocados para mostrar errores
-    )
+  }
   }
   //Genera el PDF con jsPDF y crea la url para mostrar en iframe dentro del modal
   generarPDFModal():void{
@@ -89,10 +134,11 @@ export class CompraComponent {
     this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(pdfBlob)) 
     
     //Abre el modal que contiene al PDF
-    this.mostrarModeal = true;
-
-    //Metodo para cerrar el modal y liberar la URL del PDF para evitar fugas de memoria
-    cerrarModal(): void{
+    this.mostrarModal = true;
+  }
+    
+  //Metodo para cerrar el modal y liberar la URL del PDF para evitar fugas de memoria
+  cerrarModal(): void{
     this.mostrarModal = false;
     
     if(this.pdfSrc){
@@ -100,8 +146,9 @@ export class CompraComponent {
     URL.revokeObjectURL((this.pdfSrc as any).changingThisBreakApplicationSecurity)
     this.pdfSrc = undefined
     }
+  }
     //Metodo para imprimir el PDF que esta cargando dentro del iframe en la vista
-    imprimirPDF(): void{
+  imprimirPDF(): void{
       //Obtiene la referencia al elemento iframe del DOM mediante su ID 'pdfFrame'
       //Puede devolver null si no se encuentra el elemento
       const iframe : HTMLIFrameElement | null = document.getElementById('pdfFrame') as HTMLIFrameElement
@@ -109,12 +156,11 @@ export class CompraComponent {
       //Verifica que el iframe exista y que tenga un objeto contentWindow valido
       if(iframe && iframe.contentWindow){
         //Le da foco al contenido del iframe para asegurarse que la ventana correcta esta activa para imprimir
-        iframe.contetWindow.focus();
+        iframe.contentWindow.focus();
 
         //llama al metodo print() de la ventana del iframe para abrir la ventana de impresion del navegador
         iframe.contentWindow.print() 
       }
     }
   }
-  }
-}
+
