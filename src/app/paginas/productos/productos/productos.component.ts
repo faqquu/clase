@@ -25,10 +25,10 @@ export class ProductosComponent {
 
     {
       id: 2,
-      nombre: 'radio',
-      descripcion: 'head',
-      precio: 20,
-      imagen: 'https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/dd/50/c7/dd50c790-99ac-d3d0-5ab8-e3891fb8fd52/634904032463.png/1200x630bf-60.jpg',
+      nombre: 'nyan',
+      descripcion: 'cat',
+      precio: 999,
+      imagen: '/asset/nyan.gif',
       disponibilidad: true
     }
   ];
