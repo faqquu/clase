@@ -16,10 +16,10 @@ export class ProductosComponent {
 
     {
       id: 1,
-      nombre: 'Hola',
-      descripcion: 'Mundo',
+      nombre: 'sna',
+      descripcion: 'ke',
       precio: 10,
-      imagen: 'https://preview.redd.it/variable-quality-hideo-kojima-thinking-v0-tbztklkehktc1.jpg?width=640&crop=smart&auto=webp&s=61c8fe0e3169b69829af8d919ce32160de9ecfe0',
+      imagen: '/asset/snake.gif',
       disponibilidad: true
     },
 

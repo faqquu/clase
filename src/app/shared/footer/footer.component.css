@@ -1,0 +1,11 @@
+#footerrrrr {
+    background-color: rgb(209, 0, 101) !important;
+}
+
+footer {
+    position: relative;
+    
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+}
